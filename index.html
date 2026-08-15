@@ -12,7 +12,61 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <style>
+        /* Pre-render fallback styling */
+        .fallback-app { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; min-height: 100vh; display: flex; flex-direction: column; margin: 0; padding: 0; }
+        .fallback-header { height: 4rem; display: flex; align-items: center; padding: 0 2.5rem; background: white; border-bottom: 1px solid #e2e8f0; font-weight: bold; font-size: 1.25rem; }
+        .fallback-main { flex: 1; display: grid; grid-template-columns: 5fr 7fr; min-height: calc(100vh - 4rem); }
+        .fallback-hero { padding: 4rem 2.5rem; background: white; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: center; }
+        .fallback-hero h1 { font-size: 2.25rem; line-height: 1.2; margin: 0 0 1rem 0; color: #0f172a; }
+        .fallback-hero p { color: #64748b; font-size: 1.125rem; margin-top: 0; }
+        .fallback-error { margin-top: 2rem; padding: 1.5rem; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 0.75rem; color: #991b1b; display: none; }
+        .fallback-grid-container { background: #f1f5f9; padding: 2.5rem; }
+        .fallback-grid-container h2 { margin-top: 0; font-size: 1.125rem; color: #0f172a; }
+        .fallback-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1.5rem; }
+        .fallback-card { background: white; padding: 1rem; border-radius: 0.75rem; border: 1px solid #e2e8f0; text-align: left; font-weight: bold; color: #0f172a; font-size: 0.75rem; }
+        @media (max-width: 1024px) {
+          .fallback-main { grid-template-columns: 1fr; }
+          .fallback-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+      </style>
+      <script>
+        window.addEventListener('error', function(event) {
+          var errorDiv = document.getElementById('global-error');
+          if (errorDiv) {
+            errorDiv.style.display = 'block';
+            errorDiv.innerHTML = '<strong>Application failed to start.</strong><br/><br/>' +
+              'If you are hosting this on GitHub Pages, you likely uploaded the raw source code instead of the compiled build.<br/><br/>' +
+              '<strong>Fix:</strong> You must run <code>npm run build</code> and upload the contents of the <code>/dist</code> folder, NOT the root folder.<br/><br/>' +
+              '<span style="font-size: 0.85em; opacity: 0.8">Technical details: ' + event.message + '</span>';
+          }
+        });
+      </script>
+      <div class="fallback-app">
+        <header class="fallback-header">AudioConvert</header>
+        <main class="fallback-main">
+          <section class="fallback-hero">
+            <h1>Free Online<br/><span style="color: #4f46e5;">Audio Converter</span></h1>
+            <p>Loading application interface...</p>
+            <div id="global-error" class="fallback-error"></div>
+          </section>
+          <section class="fallback-grid-container">
+            <h2>Choose Your Converter</h2>
+            <div class="fallback-grid">
+              <div class="fallback-card">MP3 to FLAC</div>
+              <div class="fallback-card">MP3 to WAV</div>
+              <div class="fallback-card">MP3 to AIFF</div>
+              <div class="fallback-card">MP3 to AAC</div>
+              <div class="fallback-card">FLAC to MP3</div>
+              <div class="fallback-card">FLAC to WAV</div>
+              <div class="fallback-card">FLAC to AIFF</div>
+              <div class="fallback-card">FLAC to AAC</div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
