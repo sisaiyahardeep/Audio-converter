@@ -14,14 +14,121 @@
   <body>
     <div id="root">
       <style>
-        .loading-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: 'Inter', sans-serif; background: #f8fafc; color: #64748b; }
-        .spinner { width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top-color: #4f46e5; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        /* Standalone Fallback Styles matching the React App */
+        :root { --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0; --slate-400: #94a3b8; --slate-500: #64748b; --slate-600: #475569; --slate-900: #0f172a; --indigo-50: #eef2ff; --indigo-600: #4f46e5; --indigo-700: #4338ca; }
+        body, html { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--slate-50); color: var(--slate-900); height: 100%; overflow: hidden; }
+        * { box-sizing: border-box; }
+        .app-layout { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .header { height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: white; border-bottom: 1px solid var(--slate-200); flex-shrink: 0; }
+        .logo { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 20px; text-decoration: none; color: var(--slate-900); }
+        .logo-icon { width: 32px; height: 32px; background: var(--indigo-600); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .main-content { flex: 1; display: grid; grid-template-columns: 5fr 7fr; overflow-y: auto; overflow-x: hidden; }
+        .left-pane { padding: 40px; display: flex; flex-direction: column; justify-content: center; background: white; position: relative; border-right: 1px solid var(--slate-200); }
+        .right-pane { padding: 32px; background: var(--slate-100); }
+        .badge { display: inline-block; padding: 4px 12px; background: var(--indigo-50); color: var(--indigo-700); font-size: 12px; font-weight: bold; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; }
+        .hero-title { font-size: 36px; font-weight: 800; line-height: 1.2; margin: 0 0 16px; }
+        .hero-title span { color: var(--indigo-600); }
+        .hero-desc { color: var(--slate-500); font-size: 18px; margin: 0 0 32px; line-height: 1.5; }
+        .upload-box { border: 2px dashed var(--slate-200); border-radius: 16px; padding: 32px; background: var(--slate-50); text-align: center; text-decoration: none; display: block; color: inherit; }
+        .upload-icon { width: 56px; height: 56px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .upload-btn { margin-top: 24px; background: var(--indigo-600); color: white; width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; border: none; font-size: 16px; }
+        .grid-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .grid-header h2 { margin: 0; font-size: 18px; font-weight: bold; }
+        .tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .tool-card { background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--slate-200); text-decoration: none; color: inherit; display: flex; flex-direction: column; }
+        .tool-icons { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .tool-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; background: var(--slate-100); color: var(--slate-600); }
+        .tool-title { font-size: 12px; font-weight: bold; margin: 0; }
+        .tool-desc { font-size: 10px; color: var(--slate-400); margin: 4px 0 0; }
+        .footer { height: 48px; background: white; border-top: 1px solid var(--slate-200); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-size: 11px; color: var(--slate-500); font-weight: 500; flex-shrink: 0; }
+        #global-error { display: none; background: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; padding: 16px; border-radius: 8px; margin-top: 24px; font-size: 14px; }
+        
+        @media (max-width: 1024px) {
+          .main-content { grid-template-columns: 1fr; }
+          .left-pane { border-right: none; border-bottom: 1px solid var(--slate-200); }
+          .tools-grid { grid-template-columns: repeat(2, 1fr); }
+        }
       </style>
-      <div class="loading-container">
-        <div class="spinner"></div>
-        <p>Initializing AudioConvert...</p>
+      <div class="app-layout">
+        <header class="header">
+          <a href="/" class="logo">
+            <div class="logo-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10v3"/><path d="M6 6v11"/><path d="M10 3v18"/><path d="M14 8v7"/><path d="M18 5v13"/><path d="M22 10v3"/></svg>
+            </div>
+            AudioConvert
+          </a>
+          <div style="font-size: 14px; font-weight: 500; color: var(--slate-600);">Home &nbsp;&nbsp;&nbsp; Audio Converter &nbsp;&nbsp;&nbsp; FAQ</div>
+        </header>
+        <main class="main-content">
+          <section class="left-pane">
+            <div style="max-width: 448px; margin: 0 auto; width: 100%;">
+              <span class="badge">WASM-Powered Tool</span>
+              <h1 class="hero-title">Free Online <br/><span>Audio Converter</span></h1>
+              <p class="hero-desc">Convert MP3, FLAC, WAV, AIFF and AAC files securely and quickly right in your browser.</p>
+              <div class="upload-box">
+                <div class="upload-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--indigo-600)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <div style="font-weight: 600; font-size: 16px;">Choose Audio File</div>
+                <div style="font-size: 12px; color: var(--slate-400); margin-top: 4px;">Drag & drop or browse your files</div>
+                <button class="upload-btn">Upload Now</button>
+              </div>
+              <div id="global-error"></div>
+            </div>
+          </section>
+          <section class="right-pane">
+            <div class="grid-header">
+              <h2>Choose Your Converter</h2>
+              <span style="font-size: 10px; font-weight: bold; background: white; border: 1px solid var(--slate-200); padding: 4px 8px; border-radius: 4px; color: var(--slate-500);">20 TOOLS</span>
+            </div>
+            <div class="tools-grid">
+              <!-- Grid Items -->
+              <div class="tool-card"><div class="tool-icons"><div class="tool-icon">MP3</div><div class="tool-icon">WAV</div></div><p class="tool-title">MP3 to WAV</p><p class="tool-desc">Universal Audio / Raw PCM</p></div>
+              <div class="tool-card"><div class="tool-icons"><div class="tool-icon">MP3</div><div class="tool-icon">FLAC</div></div><p class="tool-title">MP3 to FLAC</p><p class="tool-desc">Lossless Quality</p></div>
+              <div class="tool-card"><div class="tool-icons"><div class="tool-icon">WAV</div><div class="tool-icon">MP3</div></div><p class="tool-title">WAV to MP3</p><p class="tool-desc">Compressed Audio / Legacy</p></div>
+              <div class="tool-card"><div class="tool-icons"><div class="tool-icon">FLAC</div><div class="tool-icon">MP3</div></div><p class="tool-title">FLAC to MP3</p><p class="tool-desc">Compressed Audio / Legacy</p></div>
+              <div class="tool-card"><div class="tool-icons"><div class="tool-icon">AIFF</div><div class="tool-icon">WAV</div></div><p class="tool-title">AIFF to WAV</p><p class="tool-desc">Universal Audio / Raw PCM</p></div>
+              <div class="tool-card"><div class="tool-icons"><div class="tool-icon">AAC</div><div class="tool-icon">MP3</div></div><p class="tool-title">AAC to MP3</p><p class="tool-desc">Compressed Audio / Legacy</p></div>
+              <div class="tool-card"><div class="tool-icons"><div class="tool-icon">MP3</div><div class="tool-icon">AAC</div></div><p class="tool-title">MP3 to AAC</p><p class="tool-desc">High Efficiency</p></div>
+              <div class="tool-card"><div class="tool-icons"><div class="tool-icon">WAV</div><div class="tool-icon">FLAC</div></div><p class="tool-title">WAV to FLAC</p><p class="tool-desc">Lossless Quality</p></div>
+            </div>
+          </section>
+        </main>
+        <footer class="footer">
+          <div>&copy; 2026 AudioConvert. All Rights Reserved.</div>
+          <div>Powered by <span style="color: var(--indigo-600); font-weight: bold;">Sisaiya Records</span></div>
+        </footer>
       </div>
+      <script>
+        // If React doesn't mount within 2.5s or throws an error, display the warning banner
+        let hasMounted = false;
+        
+        // A simple check: if the root div has been modified by React, hasMounted is true.
+        // We know React wipes out the static HTML when it mounts.
+        const rootNode = document.getElementById('root');
+        
+        function showError(msg) {
+          if(hasMounted) return;
+          const errDiv = document.getElementById('global-error');
+          if(errDiv) {
+            errDiv.style.display = 'block';
+            errDiv.innerHTML = '<strong>Deployment Warning:</strong><br/>' + 
+              (msg || 'The React engine failed to load.') + 
+              '<br/><br/>If you are on GitHub Pages, you uploaded the raw source code instead of the compiled build. Please upload the contents of the <code>/dist</code> folder instead, or use GitHub Actions.';
+          }
+        }
+
+        window.addEventListener('error', function(e) { showError(e.message); });
+        
+        setTimeout(function() {
+          // If the DOM still contains our fallback "app-layout", React didn't hydrate
+          if (rootNode.innerHTML.includes('app-layout')) {
+            showError('JavaScript modules did not initialize.');
+          } else {
+            hasMounted = true;
+          }
+        }, 2500);
+      </script>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
