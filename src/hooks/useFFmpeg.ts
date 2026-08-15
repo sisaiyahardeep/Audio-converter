@@ -29,11 +29,13 @@ export function useFFmpeg() {
         console.log('[FFmpeg log]', message);
       });
 
-      const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+      const baseObj = import.meta.env.BASE_URL || '';
+      const cleanBase = baseObj.endsWith('/') ? baseObj : `${baseObj}/`;
       
       await ffmpeg.load({
-        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+        coreURL: await toBlobURL(`${cleanBase}ffmpeg/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await toBlobURL(`${cleanBase}ffmpeg/ffmpeg-core.wasm`, 'application/wasm'),
+        classWorkerURL: await toBlobURL(`${cleanBase}ffmpeg/814.ffmpeg.js`, 'text/javascript'),
       });
       
       setLoaded(true);
