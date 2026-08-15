@@ -29,20 +29,34 @@ export function useFFmpeg() {
         console.log('[FFmpeg log]', message);
       });
 
-      const baseObj = import.meta.env.BASE_URL || '';
-      const cleanBase = baseObj.endsWith('/') ? baseObj : `${baseObj}/`;
+      let basePath = window.location.pathname;
+      if (basePath.endsWith('index.html')) {
+        basePath = basePath.replace('index.html', '');
+      }
+      if (!basePath.endsWith('/')) {
+        basePath += '/';
+      }
+      const fullBaseUrl = window.location.origin + basePath;
+      
+      // Custom robust blob fetcher with 404 checking
+      const loadBlobURL = async (url: string, mimeType: string) => {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`HTTP error ${resp.status} for ${url}`);
+        const buffer = await resp.arrayBuffer();
+        const blob = new Blob([buffer], { type: mimeType });
+        return URL.createObjectURL(blob);
+      };
       
       await ffmpeg.load({
-        coreURL: await toBlobURL(`${cleanBase}ffmpeg/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await toBlobURL(`${cleanBase}ffmpeg/ffmpeg-core.wasm`, 'application/wasm'),
-        classWorkerURL: await toBlobURL(`${cleanBase}ffmpeg/814.ffmpeg.js`, 'text/javascript'),
+        coreURL: await loadBlobURL(`${fullBaseUrl}ffmpeg/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await loadBlobURL(`${fullBaseUrl}ffmpeg/ffmpeg-core.wasm`, 'application/wasm'),
       });
       
       setLoaded(true);
       return true;
     } catch (err: any) {
       console.error('Failed to load FFmpeg', err);
-      setError('Audio conversion engine could not be loaded. Please refresh the page and try again.');
+      setError(`Audio conversion engine failed to load: ${err?.message || err}. Path: ${window.location.pathname}`);
       return false;
     } finally {
       setIsLoading(false);
