@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile, toBlobURL } from '@ffmpeg/util';
+import { fetchFile } from '@ffmpeg/util';
 
 export function useFFmpeg() {
   const [loaded, setLoaded] = useState(false);
@@ -38,18 +38,9 @@ export function useFFmpeg() {
       }
       const fullBaseUrl = window.location.origin + basePath;
       
-      // Custom robust blob fetcher with 404 checking
-      const loadBlobURL = async (url: string, mimeType: string) => {
-        const resp = await fetch(url);
-        if (!resp.ok) throw new Error(`HTTP error ${resp.status} for ${url}`);
-        const buffer = await resp.arrayBuffer();
-        const blob = new Blob([buffer], { type: mimeType });
-        return URL.createObjectURL(blob);
-      };
-      
       await ffmpeg.load({
-        coreURL: await loadBlobURL(`${fullBaseUrl}ffmpeg/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await loadBlobURL(`${fullBaseUrl}ffmpeg/ffmpeg-core.wasm`, 'application/wasm'),
+        coreURL: `${fullBaseUrl}ffmpeg/ffmpeg-core.js`,
+        wasmURL: `${fullBaseUrl}ffmpeg/ffmpeg-core.wasm`,
       });
       
       setLoaded(true);
