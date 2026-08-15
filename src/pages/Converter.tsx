@@ -67,7 +67,7 @@ export function Converter() {
   };
 
   const handleConvert = async () => {
-    if (!file || !pair || !loaded) return;
+    if (!file || !pair) return;
 
     setIsConverting(true);
     setError(null);
@@ -232,26 +232,32 @@ export function Converter() {
                 </div>
               )}
 
-              {isConverting ? (
+              {isConverting || isLoading ? (
                 <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-6 text-center">
                   <Loader2 className="mx-auto h-8 w-8 animate-spin text-indigo-600 mb-4" />
-                  <p className="text-sm font-medium text-gray-900 mb-2">Converting your audio...</p>
+                  <p className="text-sm font-medium text-slate-900 mb-2">
+                    {isLoading ? 'Loading converter engine...' : 'Converting your audio...'}
+                  </p>
                   
-                  <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2 overflow-hidden">
-                    <div 
-                      className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300 ease-out" 
-                      style={{ width: `${Math.max(5, progress)}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-xs text-gray-500">{progress}% complete</p>
+                  {!isLoading && (
+                    <>
+                      <div className="w-full bg-slate-200 rounded-full h-2.5 mb-2 overflow-hidden">
+                        <div 
+                          className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300 ease-out" 
+                          style={{ width: `${Math.max(5, progress)}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-slate-500">{progress}% complete</p>
+                    </>
+                  )}
                 </div>
               ) : (
                 <button
                   onClick={handleConvert}
-                  disabled={!loaded || isLoading}
+                  disabled={isConverting}
                   className="w-full inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-4 text-base font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
-                  {!loaded || isLoading ? 'Loading converter engine...' : `Convert to ${pair.to.toUpperCase()}`}
+                  Convert to {pair.to.toUpperCase()}
                 </button>
               )}
             </div>

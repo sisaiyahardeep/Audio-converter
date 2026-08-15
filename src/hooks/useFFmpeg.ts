@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile, toBlobURL } from '@ffmpeg/util';
 
@@ -6,25 +6,22 @@ export function useFFmpeg() {
   const [loaded, setLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const ffmpegRef = useRef(new FFmpeg());
+  const ffmpegRef = useRef<FFmpeg | null>(null);
   const [progress, setProgress] = useState(0);
 
-  useEffect(() => {
-    // Only load if not already loaded and not currently loading
-    if (!loaded && !isLoading) {
-      load();
-    }
-  }, []);
-
   const load = async () => {
+    if (loaded || isLoading) return true;
+    
     setIsLoading(true);
     setError(null);
     try {
+      if (!ffmpegRef.current) {
+        ffmpegRef.current = new FFmpeg();
+      }
       const ffmpeg = ffmpegRef.current;
       
       // Setup progress listener
       ffmpeg.on('progress', ({ progress }) => {
-        // Progress goes from 0 to 1
         setProgress(Math.round(progress * 100));
       });
 
@@ -40,9 +37,11 @@ export function useFFmpeg() {
       });
       
       setLoaded(true);
+      return true;
     } catch (err: any) {
       console.error('Failed to load FFmpeg', err);
-      setError('Failed to initialize audio converter engine. Your browser might not support required features.');
+      setError('Audio conversion engine could not be loaded. Please refresh the page and try again.');
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -53,8 +52,14 @@ export function useFFmpeg() {
     outputFormat: string, 
     options: { bitrate?: string } = {}
   ): Promise<{ url: string; filename: string }> => {
-    if (!loaded) {
-      throw new Error('Converter not initialized');
+    // Ensure lazy load completes before continuing
+    let isReady = loaded;
+    if (!isReady) {
+      isReady = await load();
+    }
+    
+    if (!isReady || !ffmpegRef.current) {
+      throw new Error('Converter engine failed to initialize.');
     }
 
     const ffmpeg = ffmpegRef.current;
@@ -115,5 +120,5 @@ export function useFFmpeg() {
     }
   };
 
-  return { loaded, isLoading, error, progress, convertFile };
+  return { loaded, isLoading, error, progress, convertFile, load };
 }
