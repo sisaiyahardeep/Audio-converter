@@ -32,6 +32,7 @@ export function Home() {
       <Helmet>
         <title>Free Online Audio Converter | AudioConvert</title>
         <meta name="description" content="Convert MP3, FLAC, WAV, AIFF and AAC files quickly and easily directly in your browser. Fast, secure, and free online audio conversion." />
+        <link rel="canonical" href="https://converter.sisaiyarecords.in/" />
       </Helmet>
 
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-full">

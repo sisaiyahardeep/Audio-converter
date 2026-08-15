@@ -114,6 +114,7 @@ export function Converter() {
       <Helmet>
         <title>{pair.title} Converter | AudioConvert</title>
         <meta name="description" content={pair.description + ". Fast, free, and secure online audio conversion."} />
+        <link rel="canonical" href={`https://converter.sisaiyarecords.in/${pair.id}`} />
       </Helmet>
 
       <div className="container mx-auto px-4 py-12 md:py-20 sm:px-6 lg:px-8 max-w-3xl">
