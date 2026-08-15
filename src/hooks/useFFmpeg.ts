@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile } from '@ffmpeg/util';
+import { fetchFile, toBlobURL } from '@ffmpeg/util';
 
 export function useFFmpeg() {
   const [loaded, setLoaded] = useState(false);
@@ -29,25 +29,18 @@ export function useFFmpeg() {
         console.log('[FFmpeg log]', message);
       });
 
-      let basePath = window.location.pathname;
-      if (basePath.endsWith('index.html')) {
-        basePath = basePath.replace('index.html', '');
-      }
-      if (!basePath.endsWith('/')) {
-        basePath += '/';
-      }
-      const fullBaseUrl = window.location.origin + basePath;
+      const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
       
       await ffmpeg.load({
-        coreURL: `${fullBaseUrl}ffmpeg/ffmpeg-core.js`,
-        wasmURL: `${fullBaseUrl}ffmpeg/ffmpeg-core.wasm`,
+        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
       });
       
       setLoaded(true);
       return true;
     } catch (err: any) {
       console.error('Failed to load FFmpeg', err);
-      setError(`Audio conversion engine failed to load: ${err?.message || err}. Path: ${window.location.pathname}`);
+      setError(`Audio conversion engine failed to load: ${err?.message || err}`);
       return false;
     } finally {
       setIsLoading(false);
